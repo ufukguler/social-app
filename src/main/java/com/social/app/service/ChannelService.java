@@ -15,4 +15,6 @@ public interface ChannelService {
     List<Channel> findAll();
 
     Optional<Channel> findById(Long id);
+
+    void subscribe(Long id, Principal principal) throws Exception;
 }

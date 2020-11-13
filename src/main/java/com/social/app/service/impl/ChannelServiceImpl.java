@@ -3,6 +3,7 @@ package com.social.app.service.impl;
 import com.social.app.entity.Channel;
 import com.social.app.entity.User;
 import com.social.app.model.ChannelDto;
+import com.social.app.model.UserDto;
 import com.social.app.repository.ChannelRepository;
 import com.social.app.service.ChannelService;
 import com.social.app.service.UserService;
@@ -60,5 +61,17 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public Optional<Channel> findById(Long id) {
         return channelRepository.findById(id);
+    }
+
+    @Override
+    public void subscribe(Long id, Principal principal) throws Exception {
+        Optional<Channel> channelOptional = channelRepository.findById(id);
+        ChannelDto channelDto = new ChannelDto();
+        channelDto.setName(channelOptional.get().getName());
+
+        Optional<User> user = userService.findByName(principal.getName());
+        UserDto userDto = new UserDto();
+        userDto.setUsername(user.get().getUsername());
+        userService.subscribe(channelDto, userDto);
     }
 }

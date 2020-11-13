@@ -1,9 +1,7 @@
 package com.social.app.controllers;
 
 import com.social.app.entity.Channel;
-import com.social.app.entity.User;
 import com.social.app.model.ChannelDto;
-import com.social.app.model.UserDto;
 import com.social.app.service.ChannelService;
 import com.social.app.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/channels")
@@ -33,7 +30,7 @@ public class ChannelController {
     }
 
     /**
-     * create ne channel
+     * create new channel
      *
      * @param channelDto
      * @param principal
@@ -49,7 +46,6 @@ public class ChannelController {
 
     /**
      * subscribe to a channel by channel's id
-     *
      * @param id
      * @param principal
      * @return
@@ -58,16 +54,7 @@ public class ChannelController {
     @GetMapping("/{id}/subscribe")
     @ResponseBody
     public ResponseEntity<?> subscribe(@PathVariable Long id, Principal principal) throws Exception {
-
-        Optional<Channel> channelOptional = channelService.findById(id);
-        ChannelDto channelDto = new ChannelDto();
-        channelDto.setName(channelOptional.get().getName());
-
-        Optional<User> user = userService.findByName(principal.getName());
-        UserDto userDto = new UserDto();
-        userDto.setUsername(user.get().getUsername());
-        userService.subscribe(channelDto, userDto);
-
+        channelService.subscribe(id, principal);
         return ResponseEntity.ok(userService.findByName(principal.getName()).get().getChannels());
     }
 }
