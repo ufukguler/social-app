@@ -27,6 +27,20 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService jwtUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
 
+    private static final String[] AUTH_WHITELIST = { //
+            "/h2-console", //
+            "/h2-console/**", //
+            "/v2/api-docs", //
+            "/swagger-resources", //
+            "/swagger-resources/**", //
+            "/configuration/ui", //
+            "/configuration/security", //
+            "/swagger-ui.html", //
+            "/webjars/**", //
+            "/graphiql", //
+            "/api/graphql", //
+    };
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -49,6 +63,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests().antMatchers("/login", "/register").permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
