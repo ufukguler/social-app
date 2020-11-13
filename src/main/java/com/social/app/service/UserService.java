@@ -1,8 +1,10 @@
 package com.social.app.service;
 
 import com.social.app.entity.Channel;
+import com.social.app.entity.Notification;
 import com.social.app.entity.User;
 import com.social.app.model.ChannelDto;
+import com.social.app.model.NotificationDto;
 import com.social.app.model.UserDto;
 
 import java.util.List;
@@ -21,4 +23,7 @@ public interface UserService {
 
     List<Channel> findSubscribedChannelsById(Long id);
 
+    NotificationDto shareOnChannel(NotificationDto message);
+
+    Notification getNotifications();
 }
