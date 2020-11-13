@@ -19,6 +19,6 @@ public class RegisterController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<?> create(@Valid @RequestBody UserDto userDto, Errors errors) {
-        return registerService.save(userDto, errors);
+        return ResponseEntity.ok(registerService.save(userDto, errors));
     }
 }
