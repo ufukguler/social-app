@@ -17,7 +17,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChannelController {
     private final ChannelService channelService;
-    private final UserService userService;
 
     /**
      * list all channels
@@ -57,6 +56,13 @@ public class ChannelController {
     @ResponseBody
     public ResponseEntity<?> subscribe(@PathVariable Long id, Principal principal) throws Exception {
         channelService.subscribe(id, principal);
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/{id}/unsubscribe")
+    @ResponseBody
+    public ResponseEntity<?> unsubscribe(@PathVariable Long id, Principal principal) throws Exception {
+        channelService.unsubscribe(null, null);
         return ResponseEntity.ok(true);
     }
 

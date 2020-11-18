@@ -3,14 +3,15 @@ package com.social.app.service.impl;
 import com.social.app.entity.Channel;
 import com.social.app.entity.User;
 import com.social.app.model.ChannelDto;
-import com.social.app.model.UserDto;
 import com.social.app.repository.ChannelRepository;
 import com.social.app.service.ChannelService;
 import com.social.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -27,16 +28,16 @@ public class ChannelServiceImpl implements ChannelService {
     public Channel save(ChannelDto channelDto, Principal principal) {
         Optional<Channel> optionalChannel = channelRepository.findByName(channelDto.getName());
         if (optionalChannel.isPresent()) {
-            throw new IllegalArgumentException("channel already exist!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Channel already exist!");
         }
         User currentUser = userService.findByName(principal.getName()).get();
 
         if (currentUser.getChannel() != null) {
-            throw new IllegalArgumentException("user already has a channel!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has a channel!");
         }
 
         Channel channel = new Channel();
-        channel.setName(optionalChannel.get().getName());
+        channel.setName(channelDto.getName());
         channel.setOwner(userService.findByName(principal.getName()).get());
         Channel savedChannel = channelRepository.save(channel);
         return savedChannel;
@@ -45,16 +46,20 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public Channel delete(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        isChannelExist(id);
+        isUserExist(authentication);
+
         Optional<Channel> optionalChannel = channelRepository.findById(id);
         User currentUser = userService.findByName(authentication.getName()).get();
 
-        if (!optionalChannel.isPresent()) {
-            throw new IllegalArgumentException("channel not exist!");
+        if (optionalChannel.get().getOwner().getId() != currentUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not own this channel!");
         }
 
-        if (optionalChannel.get().getOwner().getId() != currentUser.getId()) {
-            throw new IllegalArgumentException("current user does not own this channel!");
+        if (!optionalChannel.get().getOwner().isActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This channel already deleted!");
         }
+
         optionalChannel.get().setActive(false);
         channelRepository.save(optionalChannel.get());
         return optionalChannel.get();
@@ -63,30 +68,66 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public List<Channel> findAll() {
         List<Channel> channels = channelRepository.findAll();
-        //channels.forEach(channel -> channel.setSubscribers(null));
         return channels;
     }
 
     @Override
     public Optional<Channel> findById(Long id) {
         Optional<Channel> optionalChannel = channelRepository.findById(id);
-        if (optionalChannel.isPresent()){
-            //optionalChannel.get().getOwner().setChannel(null);
-            return optionalChannel;
-        }
+        isChannelExist(id);
+        return optionalChannel;
 
-        throw new IllegalArgumentException("channel not exist!");
     }
 
     @Override
-    public void subscribe(Long id, Principal principal) throws Exception {
-        Optional<Channel> channelOptional = channelRepository.findById(id);
-        ChannelDto channelDto = new ChannelDto();
-        channelDto.setName(channelOptional.get().getName());
+    public boolean subscribe(Long id, Principal principal) {
+        isChannelExist(id);
+        isUserExist(principal);
 
-        Optional<User> user = userService.findByName(principal.getName());
-        UserDto userDto = new UserDto();
-        userDto.setUsername(user.get().getUsername());
-        userService.subscribe(channelDto, userDto);
+        Channel channel = channelRepository.findById(id).get();
+        User user = userService.findByName(principal.getName()).get();
+
+        if (isSubscribed(channel, user.getSubbedChannels())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already subscribed!");
+        }
+
+        channel.getSubscribers().add(user);
+        channelRepository.save(channel);
+        return true;
+    }
+
+    @Override
+    public boolean unsubscribe(Long id, Principal principal) {
+        isChannelExist(id);
+        isUserExist(principal);
+
+        Channel channel = channelRepository.findById(id).get();
+        User user = userService.findByName(principal.getName()).get();
+
+        if (isSubscribed(channel, user.getSubbedChannels())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already subscribed!");
+        }
+        return false;
+    }
+
+
+    private boolean isSubscribed(Channel channel, List<Channel> channelList) {
+        for (int i = 0; i < channelList.size(); i++)
+            if (channelList.get(i).getId() == channel.getId())
+                return true;
+
+        return false;
+    }
+
+    private void isUserExist(Principal principal) {
+        if (!userService.findByName(principal.getName()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist!");
+        }
+    }
+
+    private void isChannelExist(Long id) {
+        if (!channelRepository.findById(id).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Channel does not exist!");
+        }
     }
 }

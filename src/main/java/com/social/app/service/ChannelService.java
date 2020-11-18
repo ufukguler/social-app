@@ -16,5 +16,7 @@ public interface ChannelService {
 
     Optional<Channel> findById(Long id);
 
-    void subscribe(Long id, Principal principal) throws Exception;
+    boolean subscribe(Long id, Principal principal) throws Exception;
+
+    boolean unsubscribe(Long id, Principal principal) throws Exception;
 }

@@ -32,15 +32,9 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @PostMapping("/notifications")
-    @ResponseBody
-    public ResponseEntity<?> getNotifications() {
-        return ResponseEntity.ok(userService.getNotifications());
-    }
-
     @PostMapping("/share")
     @ResponseBody
-    public ResponseEntity<?> share(@RequestBody @Valid NotificationDto message) {
+    public synchronized ResponseEntity<?> share(@RequestBody @Valid NotificationDto message) {
         return ResponseEntity.ok(userService.shareOnChannel(message));
     }
 

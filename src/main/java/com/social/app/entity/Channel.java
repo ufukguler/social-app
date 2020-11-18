@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "subscribers")
 @EqualsAndHashCode(of = "id")
 public class Channel extends BaseEntity {
 
