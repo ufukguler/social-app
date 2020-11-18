@@ -38,13 +38,19 @@ public class UserServiceImpl implements UserService {
     public boolean subscribe(ChannelDto channelDto, UserDto userDto) {
         Optional<Channel> optionalChannel = channelRepository.findByName(channelDto.getName());
         Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
-        if (isSubscribed(channelDto, userDto)) {
+
+        if (!optionalChannel.isPresent()) {
+            throw new IllegalArgumentException("channel does not exist!");
+        }
+
+        if (isSubscribed(optionalChannel.get(), optionalUser.get().getSubbedChannels())) {
             throw new IllegalArgumentException("already subscribed!");
         }
+
         Channel channel = optionalChannel.get();
         User user = optionalUser.get();
         channel.getSubscribers().add(user);
-        channel.setSubscribers(channel.getSubscribers());
+        // channel.setSubscribers(channel.getSubscribers());
         channelRepository.save(channel);
         return true;
     }
@@ -88,9 +94,11 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private boolean isSubscribed(ChannelDto channelDto, UserDto userDto) {
-        Optional<Channel> optionalChannel = channelRepository.findByName(channelDto.getName());
-        Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
-        return optionalChannel.isPresent() && optionalUser.isPresent() && optionalChannel.get().getSubscribers().contains(optionalUser.get());
+    private boolean isSubscribed(Channel channel, List<Channel> channelList) {
+
+        for (int i = 0; i < channelList.size(); i++)
+            if (channelList.get(i).getId() == channel.getId())
+                return true;
+        return false;
     }
 }

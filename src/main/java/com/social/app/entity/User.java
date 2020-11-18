@@ -1,6 +1,5 @@
 package com.social.app.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -13,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "password")
+@ToString(exclude = {"password", "subbedChannels"})
 @EqualsAndHashCode(of = "id")
 public class User extends BaseEntity {
 

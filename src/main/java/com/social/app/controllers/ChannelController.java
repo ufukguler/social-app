@@ -57,7 +57,7 @@ public class ChannelController {
     @ResponseBody
     public ResponseEntity<?> subscribe(@PathVariable Long id, Principal principal) throws Exception {
         channelService.subscribe(id, principal);
-        return ResponseEntity.ok(userService.findByName(principal.getName()).get().getSubbedChannels());
+        return ResponseEntity.ok(true);
     }
 
     /**
