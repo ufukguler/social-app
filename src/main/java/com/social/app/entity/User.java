@@ -1,6 +1,8 @@
 package com.social.app.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,18 +21,20 @@ public class User extends BaseEntity {
     private String username;
 
     @Column(name = "PASSWORD", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private String password;
 
     @OneToOne(mappedBy = "owner")
+    @JsonIgnoreProperties({"owner", "subscribers"})
     private Channel channel;
 
     @ManyToMany(
+            mappedBy = "subscribers",
             cascade = CascadeType.MERGE,
             fetch = FetchType.LAZY
     )
-    @JsonBackReference
-    private List<Channel> channels;
+    @JsonIgnoreProperties({"owner", "subscribers"})
+    private List<Channel> subbedChannels;
 
     @ManyToMany(
             cascade = CascadeType.MERGE,
@@ -41,6 +45,6 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
     )
-    @JsonBackReference
+    @JsonIgnore
     private List<Role> roles;
 }
