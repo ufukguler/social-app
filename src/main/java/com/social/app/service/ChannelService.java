@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ChannelService {
     Channel save(ChannelDto channelDto, Principal principal);
 
-    Channel delete(ChannelDto channelDto);
+    Channel delete(Long id);
 
     List<Channel> findAll();
 

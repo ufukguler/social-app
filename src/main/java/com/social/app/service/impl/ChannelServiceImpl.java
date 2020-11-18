@@ -8,6 +8,8 @@ import com.social.app.repository.ChannelRepository;
 import com.social.app.service.ChannelService;
 import com.social.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -37,18 +39,25 @@ public class ChannelServiceImpl implements ChannelService {
         channel.setName(optionalChannel.get().getName());
         channel.setOwner(userService.findByName(principal.getName()).get());
         Channel savedChannel = channelRepository.save(channel);
-        return channelRepository.save(channel);
+        return savedChannel;
     }
 
     @Override
-    public Channel delete(ChannelDto channelDto) {
-        Optional<Channel> optionalChannel = channelRepository.findByName(channelDto.getName());
+    public Channel delete(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Channel> optionalChannel = channelRepository.findById(id);
+        User currentUser = userService.findByName(authentication.getName()).get();
+
         if (!optionalChannel.isPresent()) {
             throw new IllegalArgumentException("channel not exist!");
         }
-        Channel channel = channelRepository.findByName(channelDto.getName()).get();
-        channel.setActive(false);
-        return channel;
+
+        if (optionalChannel.get().getOwner().getId() != currentUser.getId()) {
+            throw new IllegalArgumentException("current user does not own this channel!");
+        }
+        optionalChannel.get().setActive(false);
+        channelRepository.save(optionalChannel.get());
+        return optionalChannel.get();
     }
 
     @Override
@@ -60,7 +69,13 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public Optional<Channel> findById(Long id) {
-        return channelRepository.findById(id);
+        Optional<Channel> optionalChannel = channelRepository.findById(id);
+        if (optionalChannel.isPresent()){
+            //optionalChannel.get().getOwner().setChannel(null);
+            return optionalChannel;
+        }
+
+        throw new IllegalArgumentException("channel not exist!");
     }
 
     @Override

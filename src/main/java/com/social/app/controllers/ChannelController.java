@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/channels")
@@ -46,6 +47,7 @@ public class ChannelController {
 
     /**
      * subscribe to a channel by channel's id
+     *
      * @param id
      * @param principal
      * @return
@@ -55,6 +57,27 @@ public class ChannelController {
     @ResponseBody
     public ResponseEntity<?> subscribe(@PathVariable Long id, Principal principal) throws Exception {
         channelService.subscribe(id, principal);
-        return ResponseEntity.ok(userService.findByName(principal.getName()).get().getChannels());
+        return ResponseEntity.ok(userService.findByName(principal.getName()).get().getSubbedChannels());
     }
+
+    /**
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}/info")
+    @ResponseBody
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(channelService.findById(id));
+    }
+
+    @GetMapping("/{id}/delete")
+    @ResponseBody
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        Channel channel = channelService.delete(id);
+        if (channel.isActive()) {
+            return ResponseEntity.of(Optional.of("Error!"));
+        }
+        return ResponseEntity.ok(channelService.delete(id));
+    }
+
 }
