@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     public List<Channel> findSubscribedChannelsById(Long id) {
         Optional<User> user = userRepository.findById(id);
         List<Channel> channels = new ArrayList<>();
-        user.get().getChannels().forEach(channel -> channels.add(channel));
+        user.get().getSubbedChannels().forEach(channel -> channels.add(channel));
         return channels;
     }
 
@@ -91,7 +91,6 @@ public class UserServiceImpl implements UserService {
     private boolean isSubscribed(ChannelDto channelDto, UserDto userDto) {
         Optional<Channel> optionalChannel = channelRepository.findByName(channelDto.getName());
         Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
-        return (optionalChannel.isPresent() && optionalUser.isPresent()) ?
-                optionalChannel.get().getSubscribers().contains(optionalUser.get()) : false;
+        return optionalChannel.isPresent() && optionalUser.isPresent() && optionalChannel.get().getSubscribers().contains(optionalUser.get());
     }
 }

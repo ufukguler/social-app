@@ -21,6 +21,11 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
 
+    @GetMapping("/{id}/info")
+    @ResponseBody
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
+    }
 
     @PostMapping("/notifications")
     @ResponseBody
