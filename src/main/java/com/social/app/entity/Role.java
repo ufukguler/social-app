@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"id", "name"})
+@ToString
 public class Role extends BaseEntity {
     @Column(name = "NAME", length = 255, unique = true)
     private String name;

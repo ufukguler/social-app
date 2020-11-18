@@ -6,8 +6,4 @@ import org.springframework.validation.Errors;
 
 public interface RegisterService {
     ResponseEntity<?> save(UserDto userDto, Errors errors);
-    /*
-    User delete(UserDto userDto);
-     */
-
 }

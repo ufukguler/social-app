@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"password", "subbedChannels"})
+@ToString
 @EqualsAndHashCode(of = "id")
 public class User extends BaseEntity {
 
