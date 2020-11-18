@@ -1,7 +1,5 @@
 package com.social.app.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +18,6 @@ public class Channel extends BaseEntity {
     private String name;
 
     @OneToOne(cascade = CascadeType.MERGE)
-    @JsonIgnoreProperties({"channel", "subbedChannels", "roles"})
     private User owner;
 
     @ManyToMany
@@ -29,7 +26,6 @@ public class Channel extends BaseEntity {
             joinColumns = @JoinColumn(name = "CHANNEL_ID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID")
     )
-    @JsonIgnore
     private List<User> subscribers;
 
 }
