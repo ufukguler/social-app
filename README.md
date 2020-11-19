@@ -1,11 +1,11 @@
 AuthController
 ```
-POST /api/login                         | Authorization - Generates JWT
+POST /api/login                         | Authentication with JWT
 ```
 
 RegisterController
 ```
-POST /api/register                      | Authentication with JWT
+POST /api/register                      | Authorization - Generates JWT
 ```
 
 ChannelController
