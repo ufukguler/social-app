@@ -56,13 +56,9 @@ public class ChannelServiceImpl implements ChannelService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not own this channel!");
         }
 
-        if (!optionalChannel.get().getOwner().isActive()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This channel already deleted!");
-        }
-
         optionalChannel.get().setActive(false);
         channelRepository.save(optionalChannel.get());
-        return optionalChannel.get();
+        return channelRepository.findById(id).get();
     }
 
     @Override
@@ -104,9 +100,14 @@ public class ChannelServiceImpl implements ChannelService {
         Channel channel = channelRepository.findById(id).get();
         User user = userService.findByName(principal.getName()).get();
 
-        if (isSubscribed(channel, user.getSubbedChannels())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already subscribed!");
+        if (!isSubscribed(channel, user.getSubbedChannels())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not subscribed to this channel!");
         }
+        user.getSubbedChannels().forEach(sub -> {
+            if (sub.getId() == id) {
+                user.getSubbedChannels().remove(sub);
+            }
+        });
         return false;
     }
 
