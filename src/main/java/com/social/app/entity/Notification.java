@@ -20,13 +20,7 @@ public class Notification extends BaseEntity implements Serializable {
     @Id
     @Column(name = "ID")
     private Long id = System.currentTimeMillis();
-    private Date createdAt;
-    private Boolean seen;
+    private Date createdAt = new Date();
     private String message;
-
-    public Notification(String message) {
-        this.message = message;
-        this.createdAt = new Date();
-        this.seen = false;
-    }
+    private String createdBy;
 }

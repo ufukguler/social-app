@@ -34,8 +34,8 @@ public class UserController {
 
     @PostMapping("/share")
     @ResponseBody
-    public synchronized ResponseEntity<?> share(@RequestBody @Valid NotificationDto message) {
-        return ResponseEntity.ok(userService.shareOnChannel(message));
+    public synchronized ResponseEntity<?> share(@RequestBody @Valid NotificationDto message, Principal principal) {
+        return ResponseEntity.ok(userService.shareOnChannel(message, principal));
     }
 
     @GetMapping("/subscribed") // bad naming

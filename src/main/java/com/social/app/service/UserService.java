@@ -4,6 +4,7 @@ import com.social.app.entity.Channel;
 import com.social.app.entity.User;
 import com.social.app.model.NotificationDto;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,5 +18,5 @@ public interface UserService {
 
     List<Channel> findSubscribedChannelsById(Long id);
 
-    NotificationDto shareOnChannel(NotificationDto message);
+    NotificationDto shareOnChannel(NotificationDto message, Principal principal);
 }

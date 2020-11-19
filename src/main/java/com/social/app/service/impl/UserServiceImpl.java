@@ -1,6 +1,7 @@
 package com.social.app.service.impl;
 
 import com.social.app.entity.Channel;
+import com.social.app.entity.Notification;
 import com.social.app.entity.User;
 import com.social.app.model.NotificationDto;
 import com.social.app.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,9 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public NotificationDto shareOnChannel(NotificationDto notification) {
+    public NotificationDto shareOnChannel(NotificationDto notificationDto, Principal principal) {
+        Notification notification = new Notification();
+        notification.setMessage(notificationDto.getMessage());
+        notification.setCreatedBy(principal.getName());
         rabbitTemplate.convertAndSend(exchangeName, routingName, notification);
-        return notification;
+        return notificationDto;
     }
 
 }
