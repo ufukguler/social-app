@@ -46,8 +46,8 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public Channel delete(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        isChannelExist(id);
-        isUserExist(authentication);
+        isChannelExistById(id);
+        isUserExistByPrincipal(authentication);
 
         Optional<Channel> optionalChannel = channelRepository.findById(id);
         User currentUser = userService.findByName(authentication.getName()).get();
@@ -70,15 +70,15 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public Optional<Channel> findById(Long id) {
         Optional<Channel> optionalChannel = channelRepository.findById(id);
-        isChannelExist(id);
+        isChannelExistById(id);
         return optionalChannel;
 
     }
 
     @Override
     public boolean subscribe(Long id, Principal principal) {
-        isChannelExist(id);
-        isUserExist(principal);
+        isChannelExistById(id);
+        isUserExistByPrincipal(principal);
 
         Channel channel = channelRepository.findById(id).get();
         User user = userService.findByName(principal.getName()).get();
@@ -94,8 +94,8 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public boolean unsubscribe(Long id, Principal principal) {
-        isChannelExist(id);
-        isUserExist(principal);
+        isChannelExistById(id);
+        isUserExistByPrincipal(principal);
 
         Channel channel = channelRepository.findById(id).get();
         User user = userService.findByName(principal.getName()).get();
@@ -120,13 +120,13 @@ public class ChannelServiceImpl implements ChannelService {
         return false;
     }
 
-    private void isUserExist(Principal principal) {
+    private void isUserExistByPrincipal(Principal principal) {
         if (!userService.findByName(principal.getName()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist!");
         }
     }
 
-    private void isChannelExist(Long id) {
+    private void isChannelExistById(Long id) {
         if (!channelRepository.findById(id).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Channel does not exist!");
         }

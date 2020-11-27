@@ -3,7 +3,6 @@ package com.social.app.controllers;
 import com.social.app.entity.Channel;
 import com.social.app.model.ChannelDto;
 import com.social.app.service.ChannelService;
-import com.social.app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +61,7 @@ public class ChannelController {
     @GetMapping("/{id}/unsubscribe")
     @ResponseBody
     public ResponseEntity<?> unsubscribe(@PathVariable Long id, Principal principal) throws Exception {
-        channelService.unsubscribe(null, null);
+        channelService.unsubscribe(id, principal);
         return ResponseEntity.ok(true);
     }
 
