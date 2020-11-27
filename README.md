@@ -1,3 +1,11 @@
+
+### run mysql & rabbitmq w/ docker
+`docker-compose up`
+
+### controllers
+JWT uses Bearer Token, to send a request to the server first you need to send a post request to /api/register with JSON data (username, password) then send a post request to /api/login and you will get your token.
+
+
 AuthController
 ```
 POST /api/login                         | Authentication with JWT
